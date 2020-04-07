@@ -2,7 +2,7 @@
 Name=ScummVM Tools
 Comment=A tool collection for working with ScummVM data files
 Exec=scummvm-tools
-Icon=${SNAP}/share/games/scummvm-tools/scummvmtools_128.png
+Icon=${SNAP}/meta/gui/scummvm-tools.png
 Terminal=false
 Type=Application
 Categories=Game;AdventureGame;
