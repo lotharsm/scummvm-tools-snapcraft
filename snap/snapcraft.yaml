@@ -19,7 +19,7 @@ grade: stable
 apps:
   scummvm-tools:
     extensions: [gnome-3-28]
-    command: bin/scummvm-tools
+    command: desktop-launch $SNAP/bin/scummvm-tools
     plugs:
       - x11
       - wayland
@@ -50,9 +50,8 @@ parts:
         snapcraftctl set-version $(git -C ../src describe | sed 's/desc\///')
       fi    
       snapcraftctl build
-      mkdir -p $SNAPCRAFT_PART_INSTALL/usr/share/games/scummvm-tools/gui/media
-      cp $SNAPCRAFT_PART_BUILD/gui/media/* $SNAPCRAFT_PART_INSTALL/usr/share/games/scummvm-tools/
-      cp $SNAPCRAFT_PART_BUILD/gui/media/* $SNAPCRAFT_PART_INSTALL/bin/
+      mkdir -p $SNAPCRAFT_PART_INSTALL/bin/gui/media/
+      cp $SNAPCRAFT_PART_BUILD/gui/media/* $SNAPCRAFT_PART_INSTALL/bin/gui/media/
       
     plugin: autotools
     configflags:
