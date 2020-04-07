@@ -1,0 +1,9 @@
+[Desktop Entry]
+Name=ScummVM Tools
+Comment=A tool collection for working with ScummVM data files
+Exec=scummvm-tools
+Icon=${SNAP}/share/scummvm-tools/scummvmtools_128.png
+Terminal=false
+Type=Application
+Categories=Game;AdventureGame;
+StartupNotify=false
