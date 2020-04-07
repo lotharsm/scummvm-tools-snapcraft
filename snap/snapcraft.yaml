@@ -1,0 +1,101 @@
+name: scummvm-tools
+base: core18
+license: GPL-2.0
+adopt-info: scummvm-tools
+summary: ScummVM Tools
+description: |
+    This is a collection of various tools that may be useful to use in conjunction with ScummVM.
+    Please note that this module is not always in-sync with the latest stable version of ScummVM.
+
+    The extraction and compression tools can either be run from the command line or using the GUI wizard.
+    All other tools are only available in command line.
+
+    You can get a list of the supported tools using --list:
+    scummvm-tools.cli --list
+
+confinement: strict
+grade: stable
+
+apps:
+  scummvm-tools:
+    extensions: [gnome-3-28]
+    command: bin/scummvm-tools
+    plugs:
+      - x11
+      - wayland
+      - unity7
+      - home
+      - removable-media
+
+  cli:
+    command: scummvm-tools-cli
+    plugs:
+      - home
+      - removable-media
+
+parts:
+  scummvm-tools:
+    source: https://github.com/scummvm/scummvm-tools.git
+    override-build: |
+      last_committed_tag="$(git tag --list | tac | head -n1)"
+      trimmed_tag="$(echo $last_committed_tag | sed 's/desc\///' | sed 's/git//' | sed 's/^v//')"
+      last_released_tag="$(snap info scummvm-tools | awk '$1 == "latest/beta:" { print $2 }')"
+      # If the latest tag from the upstream project has not been released to
+      # beta, build that tag instead of master.
+      if [ "${trimmed_tag}" != "${last_released_tag}" ]; then
+        git fetch
+        git checkout "${last_committed_tag}"
+        snapcraftctl set-version $(git -C ../src tag --list | tac | head -n1 | sed 's/desc\///' | sed 's/git//' | sed 's/^v//')
+      else
+        snapcraftctl set-version $(git -C ../src describe | sed 's/desc\///')
+      fi    
+      snapcraftctl build
+      mkdir -p $SNAPCRAFT_PART_INSTALL/usr/share/games/scummvm-tools/gui/media
+      cp $SNAPCRAFT_PART_BUILD/gui/media/* $SNAPCRAFT_PART_INSTALL/usr/share/games/scummvm-tools/
+      cp $SNAPCRAFT_PART_BUILD/gui/media/* $SNAPCRAFT_PART_INSTALL/bin/
+      
+    plugin: autotools
+    configflags:
+      - --enable-release
+      - --disable-debug
+
+    build-packages:
+      - g++
+      - make
+      - libwxgtk3.0-gtk3-dev
+      - libjpeg62-dev
+      - libogg-dev
+      - libvorbis-dev
+      - libflac-dev
+      - libmad0-dev
+      - libpng-dev
+      - libtheora-dev
+      - zlib1g-dev
+      - libunity-dev
+
+    stage-packages:
+      - libstdc++6
+      - libwxgtk3.0-gtk3-0v5
+      - libflac8
+      - libgl1-mesa-dri
+      - libgl1-mesa-glx
+      - libglu1-mesa
+      - libwayland-egl1-mesa
+      - libmad0
+      - libogg0
+      - libpng16-16
+      - libvorbis0a
+      - libvorbisfile3
+      - libvorbisenc2
+      - zlib1g
+      - libdbusmenu-glib4
+      - libunity-protocol-private0
+      - libunity9
+
+  wxwidgets-sdk:
+      plugin: nil
+      stage-snaps:
+        - wxwidgets-sdk-gtk3
+      stage-packages:
+        - binutils
+
